@@ -1,0 +1,9 @@
+{% spaceless %}
+{% for entry in entries %}
+{% if entry.purpose == "maskable" %}<link rel="apple-touch-icon" sizes="{{ entry.sizes }}" href="{{ entry.src }}">
+{% elif entry.purpose == "monochrome" %}<link rel="mask-icon" href="{{ entry.src }}"{% if theme_color %} color="{{ theme_color }}"{% endif %}>
+{% else %}<link rel="icon"{% if entry.type != "image/x-icon" %} type="{{ entry.type }}"{% endif %}{% if entry.sizes and entry.sizes != "any" %} sizes="{{ entry.sizes }}"{% endif %} href="{{ entry.src }}">
+<link rel="shortcut icon" href="{{ entry.src }}">
+{% endif %}
+{% endfor %}
+{% endspaceless %}

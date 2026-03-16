@@ -1,0 +1,7 @@
+{% spaceless %}
+{% for entry in entries %}
+{% if entry.type == "image/x-icon" %}<link rel="shortcut icon" href="{{ entry.src }}">
+{% else %}<link rel="icon" type="{{ entry.type }}"{% if entry.sizes and entry.sizes != "any" %} sizes="{{ entry.sizes }}"{% endif %} href="{{ entry.src }}">
+{% endif %}
+{% endfor %}
+{% endspaceless %}

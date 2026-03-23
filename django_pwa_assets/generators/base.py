@@ -128,7 +128,8 @@ def render_canvas(
     new_h = int(logo_h * ratio)
 
     # Use LANCZOS for high-quality downsampling
-    resized_logo = logo.resize((new_w, new_h), Image.Resampling.LANCZOS)
+    _lanczos = getattr(Image, "Resampling", Image).LANCZOS
+    resized_logo = logo.resize((new_w, new_h), _lanczos)
 
     # Calculate centered position
     offset = ((w - new_w) // 2, (h - new_h) // 2)

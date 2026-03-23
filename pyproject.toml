@@ -54,6 +54,10 @@ Documentation = "https://github.com/forwalk-org/django_pwa_assets#readme"
 "Bug Tracker" = "https://github.com/forwalk-org/django_pwa_assets/issues"
 Changelog     = "https://github.com/forwalk-org/django_pwa_assets/blob/main/CHANGELOG.md"
 
+# ── setuptools ──────────────────────────────────────────────────────────────
+[tool.setuptools.packages.find]
+include = ["django_pwa_assets*"]
+
 # ── pytest ──────────────────────────────────────────────────────────────────
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "tests.settings"

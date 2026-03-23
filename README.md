@@ -380,6 +380,32 @@ automatically busts the asset cache when incremented.
 
 ---
 
+## Testing
+
+The project uses `tox` for multi-version testing (Django 3.2 → 5.1, Python 3.8 → 3.12). 
+
+A helper script is provided to run tests inside a Docker container (using `divio/multi-python`), ensuring all system dependencies (like `libcairo2`) are present without polluting your local host.
+
+### Local Docker Testing
+
+```bash
+# Run all tests for a specific environment (e.g., Python 3.10)
+./script/test-local.sh -e py310
+
+# Run a specific test file
+./script/test-local.sh -e py310 -- tests/test_templatetags.py
+
+# Run all environments (defined in tox.ini)
+./script/test-local.sh
+```
+
+The script automatically:
+1. Builds a custom Docker image `django-pwa-assets-test`.
+2. Mounts the project root to `/src`.
+3. Executes `tox` with any provided arguments.
+
+---
+
 ## License
 
 MIT

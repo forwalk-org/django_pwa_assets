@@ -15,8 +15,8 @@ Generates icons, favicons, Windows tiles, and iOS splash screens from a single s
 | **Windows mstiles** | 70×70, 150×150, 310×310, 310×150 |
 | **iOS splash screens** | 38 images covering iPhone SE → iPhone 16 Pro Max + all iPads |
 | **Dark mode splashes** | Second set with `(prefers-color-scheme: dark)` — iOS 13+ |
-| **JPEG output** | `--format jpeg` reduces splash size by ~90% |
-| **`opaque` flag** | Force solid white canvas for `any` icons (pwa-asset-generator `--opaque`) |
+| **JPEG output** | educes splash size by ~90% |
+| **`opaque` flag** | Force solid white canvas for `any` icons|
 | **Configurable storage** | Any Django `STORAGES` alias — local, S3, GCS, Azure, CDN |
 | **Override chain** | `kwargs > PWA_ASSETS settings > defaults` |
 | **Async-first** | Native async pipeline; sync wrappers (`get_or_generate_*`) for WSGI/scripts |
@@ -67,9 +67,6 @@ PWA_ASSETS = {
 
     # Sub-paths within the storage
     "OUTPUT_PATH":         "pwa/icons",      # icons
-    "SPLASH_OUTPUT_PATH":  "pwa/splashes",   # splash screens
-    "FAVICON_OUTPUT_PATH": "pwa/favicons",   # favicons
-    "MSTILE_OUTPUT_PATH":  "pwa/mstiles",    # Windows tiles
 
     # Icon generation
     "PURPOSES":             ("any", "maskable"),  # add "monochrome" if needed
@@ -112,6 +109,51 @@ STORAGES = {
 }
 
 PWA_ASSETS = {"STORAGE": "pwa_assets"}
+```
+
+---
+
+## Caching
+
+`django-pwa-assets` uses a **two-tier manifest cache** to avoid redundant I/O on every request:
+
+1. **Tier 1 — Django cache** (`CACHE_NAME`): in-memory / Redis / Memcached lookup. Nearly zero latency.
+2. **Tier 2 — manifest JSON file** on the storage backend (e.g. `icons.json` next to the generated files). Always persisted; used as fallback when the cache is cold.
+
+On every request the system checks Tier 1 first, falls back to Tier 2 (and back-fills Tier 1), and only regenerates assets when neither has a valid manifest.
+
+### When to enable the Django cache
+
+| Storage type | Recommendation |
+|---|---|
+| **Remote** (S3, GCS, Azure, CDN) | **Strongly recommended.** Every Tier-2 miss costs a network round-trip. Without a fast cache, each cold request will call the remote storage API. |
+| **Local filesystem** | Optional. Tier 2 (disk read) is already cheap, so the cache gives only a marginal benefit. Leave `CACHE_NAME` unset here if you prefer simplicity. |
+
+### Configuration
+
+```python
+# settings.py
+PWA_ASSETS = {
+    # Django cache alias to use for Tier 1.
+    # Set to None (or omit) to skip the in-memory cache and rely on disk only.
+    "CACHE_NAME": "pwa_cache",     # default: "default"
+    "CACHE_TIMEOUT": 86400 * 365,    
+}
+
+# Add a dedicated cache entry in CACHES (optional but recommended):
+CACHES = {
+    "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
+    "pwa_cache": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+    },
+}
+```
+
+To **disable** the Django cache entirely and rely only on the manifest JSON file on disk:
+
+```python
+PWA_ASSETS = {"CACHE_NAME": None}
 ```
 
 ---
@@ -303,12 +345,6 @@ PWA_ASSETS = {
 }
 ```
 
-Or per-command:
-
-```bash
-python manage.py generate_pwa_splashes logo.svg --format jpeg --quality 80
-```
-
 ---
 
 ## Deploy checklist
@@ -330,26 +366,6 @@ python manage.py generate_pwa_splashes logo.svg --format jpeg
 ```
 
 ---
-
-## Architecture
-
-```
-django_pwa_assets/
-├── __init__.py          # Public API re-exports
-├── apps.py              # Django AppConfig
-├── conf.py              # Settings resolver (override chain)
-├── generator.py         # High-level async/sync entry points
-├── source.py            # Image input resolution & cache-key computation
-├── storage.py           # Manifest + two-tier cache (Django cache + JSON file)
-├── generators/
-│   ├── base.py            # Orchestrator, AssetTask, AssetManifestEntry, render_canvas
-│   ├── icons.py           # PWA icon generator (any / maskable / monochrome)
-│   ├── favicons.py        # Favicon generator (.ico + PNG)
-│   ├── mstiles.py         # Microsoft Tile generator
-│   └── splashes.py        # iOS splash screen generator
-└── templatetags/
-    └── pwa_assets.py      # Django template tags
-```
 
 ## Updating splash screen specs
 

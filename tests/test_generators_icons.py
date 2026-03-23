@@ -18,12 +18,12 @@ class IconsGeneratorTest(TestCase):
 
     def test_generate_with_svg(self):
         img = Image.new("RGBA", (100, 100), (255, 255, 255, 255))
-        img.source_svg = b"<svg>test</svg>"
+        img.svg_source = b"<svg>test</svg>"
         tasks = list(generate_icons(img, "pwa/test", purposes=["any"]))
-        
+
         # 'any' has 10 sizes + 1 for SVG
         self.assertEqual(len(tasks), 11)
-        
+
         svg_task = [t for t in tasks if t.mimetype == "image/svg+xml"][0]
         self.assertEqual(svg_task.filename, "pwa/test/icon.svg")
         self.assertEqual(svg_task.content, b"<svg>test</svg>")

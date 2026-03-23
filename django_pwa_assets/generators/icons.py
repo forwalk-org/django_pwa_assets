@@ -123,11 +123,11 @@ def generate_icons(
     else:
         bg_color = parse_color(background) or (255, 255, 255, 255)
 
-    if hasattr(img, 'source_svg'):
+    if getattr(img, 'svg_source', None) is not None:
         # Add svg icon if source is from svg file
         yield AssetTask(
             filename=f"{asset_dir}/icon.svg",
-            content=img.source_svg,
+            content=getattr(img, "svg_source"),
             mimetype="image/svg+xml",
             metadata={
                 "sizes": "any",

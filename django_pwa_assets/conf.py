@@ -49,7 +49,7 @@ DEFAULTS: dict[str, Any] = {
 
     # Storage.
     "STORAGE": "default",
-    "OUTPUT_PATH": "pwa/icons",
+    "OUTPUT_PATH": "pwa/assets",
 
     # Icon generation.
     "PURPOSES": ("any", "maskable"),

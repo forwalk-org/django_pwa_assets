@@ -85,6 +85,17 @@ class SourceModuleTest(TestCase):
             resolved = resolve_source_to_pil("fake.png")
             self.assertEqual(resolved.getpixel((0, 0)), (0, 255, 0, 255))
 
+    def test_resolve_source_to_pil_from_svg(self):
+        svg_data = b"""
+            <svg viewBox="0 0 10 10" width="10">
+                <circle cx="5" cy="5" r="1"/>
+            </svg>"""
+        resolved = resolve_source_to_pil(svg_data)
+        self.assertIsInstance(resolved, Image.Image)
+        self.assertEqual(resolved.svg_source, svg_data)
+        self.assertEqual(resolved.mode, "RGBA")
+
+
     def test_is_svg_detection(self):
         self.assertTrue(is_svg(b"<?xml version='1.0'?><svg>...</svg>"))
         self.assertTrue(is_svg(b"<svg xmlns='...'>...</svg>"))

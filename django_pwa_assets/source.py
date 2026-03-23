@@ -147,6 +147,9 @@ def resolve_source_to_pil(img: Any, storage: Any = None) -> Image.Image:
             svg = raw_bytes
         pil_img = svg_to_pil(svg)
         # Store SVG bytes on the object for later use (e.g. copying)
+        print("b"*20)
+        print(svg)
+        print("aaa")
         setattr(pil_img, "svg_source", svg)
         return pil_img
 

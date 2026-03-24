@@ -229,12 +229,14 @@ from django_pwa_assets import (
     aget_or_generate_favicons,
     aget_or_generate_mstiles,
     aget_or_generate_splashes,
+    aget_or_create_manifest_icon,  # Async manifest-ready icons
     # Sync entry points (WSGI / management commands)
     get_or_generate_all,
     get_or_generate_icons,
     get_or_generate_favicons,
     get_or_generate_mstiles,
     get_or_generate_splashes,
+    get_or_create_manifest_icons,  # Sync manifest-ready icons
     # Generator functions (for custom pipelines)
     generate_icons,
     generate_favicons,
@@ -294,13 +296,13 @@ splashes = get_or_generate_splashes(
 
 ```python
 from django.http import JsonResponse
-from django_pwa_assets import get_or_generate_icons
+from django_pwa_assets import get_or_create_manifest_icons
 
 def manifest_view(request):
-    icons = get_or_generate_icons(request.session.get("logo_path", "logo.svg"))
+    icons = get_or_create_manifest_icons(request.session.get("logo_path", "logo.svg"))
     return JsonResponse({
         "name": "My App",
-        "icons": icons,  # list[AssetManifestEntry]
+        "icons": icons,  # list[dict] with src, sizes, type, purpose
     })
 ```
 

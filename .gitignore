@@ -48,6 +48,7 @@ venv.bak/
 .coverage
 htmlcov/
 .pytest_cache/
+.tox_docker
 
 # Project specifics
 pwa/

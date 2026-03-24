@@ -176,3 +176,43 @@ def get_or_generate_splashes(img: Image, **kwargs) -> List[AssetManifestEntry]:
 def get_or_generate_all(img: Image, **kwargs) -> AllAssets:
     """Synchronous wrapper for aget_or_generate_all."""
     return async_to_sync(aget_or_generate_all)(img, **kwargs)
+
+
+async def aget_or_create_manifest_icon(img: Image, **kwargs) -> List[Dict[str, str]]:
+    """Generates PWA icons and returns them in a format compatible with manifest.json.
+
+    This function is a wrapper around `aget_or_generate_icons` that maps the
+    resulting asset entries to the standard PWA manifest icon format.
+
+    Args:
+        img: Source image — a file-system path (str/Path), raw bytes, a
+            file-like object, or a PIL Image.
+        **kwargs: Optional overrides forwarded to :func:`aget_or_generate_icons`.
+
+    Returns:
+        A list of dictionaries, each containing 'src', 'sizes', 'type', and 'purpose'.
+    """
+    entries = await aget_or_generate_icons(img, **kwargs)
+    return [
+        {
+            "src": entry["url"],
+            "sizes": entry["sizes"],
+            "type": entry["type"],
+            "purpose": entry.get("purpose", "any"),
+        }
+        for entry in entries
+    ]
+
+
+def get_or_create_manifest_icons(img: Image, **kwargs) -> List[Dict[str, str]]:
+    """Synchronous wrapper for aget_or_create_manifest_icon.
+
+    Args:
+        img: Source image — a file-system path (str/Path), raw bytes, a
+            file-like object, or a PIL Image.
+        **kwargs: Optional overrides forwarded to :func:`aget_or_create_manifest_icon`.
+
+    Returns:
+        A list of dictionaries, each containing 'src', 'sizes', 'type', and 'purpose'.
+    """
+    return async_to_sync(aget_or_create_manifest_icon)(img, **kwargs)

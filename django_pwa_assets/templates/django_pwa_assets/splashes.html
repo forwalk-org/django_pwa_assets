@@ -1,5 +1,7 @@
 {% spaceless %}
-{% for entry in entries %}
-<link rel="apple-touch-startup-image"{% if entry.media %} media="{{ entry.media }}"{% endif %} href="{{ entry.src }}">
-{% endfor %}
+  {% for entry in entries %}
+    <link rel="apple-touch-startup-image"
+          {% if entry.media %} media="{{ entry.media }}"{% endif %} 
+          href="{{ entry.src }}">
+  {% endfor %}
 {% endspaceless %}

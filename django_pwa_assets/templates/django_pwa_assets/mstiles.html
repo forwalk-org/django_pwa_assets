@@ -1,7 +1,8 @@
 {% spaceless %}
-{% for entry in entries %}
-<meta name="{{ entry.name }}" content="{{ entry.src }}">
-{% endfor %}
-{% if tile_color %}<meta name="msapplication-TileColor" content="{{ tile_color }}">
-{% endif %}
+  {% for entry in entries %}
+     <meta name="{{ entry.name }}" content="{{ entry.src }}">
+  {% endfor %}
+  {% if tile_color %}
+     <meta name="msapplication-TileColor" content="{{ tile_color }}">
+  {% endif %}
 {% endspaceless %}

@@ -45,7 +45,9 @@ def generate_favicons(
     # 1. Multi-frame ICO (typically contains 16x16 and 32x32 frames)
     ico_buf = io.BytesIO()
     # ICO format can store multiple sizes; we use 32x32 as the primary resizing target
-    ico_logo = img.resize((32, 32), Image.Resampling.LANCZOS)
+    # Use LANCZOS for high-quality downsampling
+    _lanczos = getattr(Image, "Resampling", Image).LANCZOS
+    ico_logo = img.resize((32, 32), _lanczos)
     ico_logo.save(ico_buf, format="ICO", sizes=[(16, 16), (32, 32)])
 
     yield AssetTask(

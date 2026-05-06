@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "django-pwa-assets"
-version = "0.2.0"
+version = "0.2.1"
 description = "Complete PWA asset generation for Django: icons, splash screens, favicons, Windows tiles, dark mode. Inspired by pwa-asset-generator."
 readme = "README.md"
 license = { text = "MIT" }
@@ -55,8 +55,14 @@ Documentation = "https://github.com/forwalk-org/django_pwa_assets#readme"
 Changelog     = "https://github.com/forwalk-org/django_pwa_assets/blob/main/CHANGELOG.md"
 
 # ── setuptools ──────────────────────────────────────────────────────────────
+[tool.setuptools]
+include-package-data = true
+
 [tool.setuptools.packages.find]
 include = ["django_pwa_assets*"]
+
+[tool.setuptools.package-data]
+"django_pwa_assets" = ["templates/**/*.html", "templates/*.html"]
 
 # ── pytest ──────────────────────────────────────────────────────────────────
 [tool.pytest.ini_options]

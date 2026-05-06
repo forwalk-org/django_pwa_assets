@@ -20,11 +20,11 @@ Quick start::
 See ``generator.py`` for the full API reference.
 
 Author:  Maurizio Melani
-Version: 0.2.0
+Version: 0.2.1
 License: MIT
 """
 
-__version__: str = "0.2.0"
+__version__: str = "0.2.1"
 __author__: str = "Maurizio Melani"
 
 # Expose the complete public API at the package level so that callers do

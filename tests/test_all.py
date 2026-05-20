@@ -513,7 +513,7 @@ class TestSizes(unittest.TestCase):
             SPEC_VERSION,
         )  # Moved to source for key stability? No, wait.
 
-        assert SPEC_VERSION == "2025.06"
+        assert SPEC_VERSION == "2026.05"
 
     def test_any_includes_192_and_512(self):
         from django_pwa_assets.generators.icons import get_icon_sizes

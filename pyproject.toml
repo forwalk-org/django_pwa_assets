@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "django-pwa-assets"
-version = "0.2.1"
+version = "0.2.3"
 description = "Complete PWA asset generation for Django: icons, splash screens, favicons, Windows tiles, dark mode. Inspired by pwa-asset-generator."
 readme = "README.md"
 license = { text = "MIT" }

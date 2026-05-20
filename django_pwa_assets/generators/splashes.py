@@ -5,7 +5,7 @@ full-screen splash while the PWA is loading.  Each **device × orientation**
 pair requires its own image matched by a precise CSS media query.
 
 This module covers 12 device variants (portrait + landscape each) from
-iPhone 11 / iOS 12 up to iPhone 16 Pro Max / iOS 18, plus iPad Pro 13\".
+iPhone 11 / iOS 12 up to iPhone 17 Pro Max / iOS 19, plus iPad Pro 13\".
 
 Dark mode support:
     When ``dark_background`` is configured a second set of images is generated
@@ -55,8 +55,9 @@ class SplashSpec:
 # Raw device metadata for iOS splash screen generation.
 # Format: {name: (canvas_w, canvas_h, logical_w, logical_h, dpr, ios_version)}
 _IOS_RAW_DEVICES: Dict[str, Tuple[int, int, int, int, int, str]] = {
-    "iPhone 16 Pro Max":            (1320, 2868, 440, 956, 3, "18"),
-    "iPhone 16 Pro":                (1206, 2622, 402, 874, 3, "18"),
+    "iPhone 17/16 Pro Max":         (1320, 2868, 440, 956, 3, "18"),
+    "iPhone 17 Pro/17/16 Pro":      (1206, 2622, 402, 874, 3, "18"),
+    "iPhone 17 Air/Slim":           (1260, 2736, 420, 912, 3, "19"),
     "iPhone 16 Plus/15 Pro Max":    (1290, 2796, 430, 932, 3, "16"),
     "iPhone 16/15 Pro/14 Pro":      (1179, 2556, 393, 852, 3, "16"),
     "iPhone 14 Plus/13 Pro Max":    (1284, 2778, 428, 926, 3, "14"),

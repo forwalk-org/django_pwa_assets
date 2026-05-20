@@ -41,7 +41,7 @@ except ImportError:
 
 
 # Bump this string whenever default sizes or specs change to bust the cache.
-SPEC_VERSION: str = "2025.06"
+SPEC_VERSION: str = "2026.05"
 
 # Separator between identity components used in raw key strings.
 _SEP: Final[str] = "||"

@@ -8,18 +8,19 @@ Generates icons, favicons, Windows tiles, and iOS splash screens from a single s
 
 ## Features
 
-| Feature | Description |
-|---|---|
-| **Icons** | `any`, `maskable`, `monochrome` — full recommended size set |
-| **Favicons** | `favicon.ico` (16+32px combined) + standalone PNGs |
-| **Windows mstiles** | 70×70, 150×150, 310×310, 310×150 |
-| **iOS splash screens** | 38 images covering iPhone SE → iPhone 16 Pro Max + all iPads |
-| **Dark mode splashes** | Second set with `(prefers-color-scheme: dark)` — iOS 13+ |
-| **JPEG output** | educes splash size by ~90% |
-| **`opaque` flag** | Force solid white canvas for `any` icons|
-| **Configurable storage** | Any Django `STORAGES` alias — local, S3, GCS, Azure, CDN |
-| **Override chain** | `kwargs > PWA_ASSETS settings > defaults` |
-| **Async-first** | Native async pipeline; sync wrappers (`get_or_generate_*`) for WSGI/scripts |
+| Feature                  | Description                                                                 |
+| ------------------------ | --------------------------------------------------------------------------- |
+| **Icons**                | `any`, `maskable`, `monochrome` — full recommended size set                 |
+| **Favicons**             | `favicon.ico` (16+32px combined) + standalone PNGs                          |
+| **Windows mstiles**      | 70×70, 150×150, 310×310, 310×150                                            |
+| **iOS splash screens**   | 40 images covering iPhone SE → iPhone 17 Pro Max + all iPads                |
+| **Dark mode splashes**   | Second set with `(prefers-color-scheme: dark)` — iOS 13+                    |
+| **JPEG output**          | educes splash size by ~90%                                                  |
+| **`opaque` flag**        | Force solid white canvas for `any` icons                                    |
+| **Configurable storage** | Any Django `STORAGES` alias — local, S3, GCS, Azure, CDN                    |
+| **Override chain**       | `kwargs > PWA_ASSETS settings > defaults`                                   |
+| **Async-first**          | Native async pipeline; sync wrappers (`get_or_generate_*`) for WSGI/scripts |
+
 ---
 
 ## Installation
@@ -124,10 +125,10 @@ On every request the system checks Tier 1 first, falls back to Tier 2 (and back-
 
 ### When to enable the Django cache
 
-| Storage type | Recommendation |
-|---|---|
-| **Remote** (S3, GCS, Azure, CDN) | **Strongly recommended.** Every Tier-2 miss costs a network round-trip. Without a fast cache, each cold request will call the remote storage API. |
-| **Local filesystem** | Optional. Tier 2 (disk read) is already cheap, so the cache gives only a marginal benefit. Leave `CACHE_NAME` unset here if you prefer simplicity. |
+| Storage type                     | Recommendation                                                                                                                                     |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Remote** (S3, GCS, Azure, CDN) | **Strongly recommended.** Every Tier-2 miss costs a network round-trip. Without a fast cache, each cold request will call the remote storage API.  |
+| **Local filesystem**             | Optional. Tier 2 (disk read) is already cheap, so the cache gives only a marginal benefit. Leave `CACHE_NAME` unset here if you prefer simplicity. |
 
 ### Configuration
 
@@ -137,7 +138,7 @@ PWA_ASSETS = {
     # Django cache alias to use for Tier 1.
     # Set to None (or omit) to skip the in-memory cache and rely on disk only.
     "CACHE_NAME": "pwa_cache",     # default: "default"
-    "CACHE_TIMEOUT": 86400 * 365,    
+    "CACHE_TIMEOUT": 86400 * 365,
 }
 
 # Add a dedicated cache entry in CACHES (optional but recommended):
@@ -215,8 +216,6 @@ All kwargs are optional — omitting falls through to `PWA_ASSETS` then defaults
 
 ---
 
-
-
 ## Python API
 
 All public symbols are accessible from the top-level package:
@@ -244,7 +243,6 @@ from django_pwa_assets import (
     generate_splashes,
     # Data types
     AssetManifestEntry,
-    AssetTask,
     AllAssets,
 )
 ```
@@ -323,13 +321,17 @@ No JavaScript required.
 Example HTML output:
 
 ```html
-<link rel="apple-touch-startup-image"
-      media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
-      href="/pwa/splashes/splash-1179x2556-portrait.jpg">
+<link
+  rel="apple-touch-startup-image"
+  media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+  href="/pwa/splashes/splash-1179x2556-portrait.jpg"
+/>
 
-<link rel="apple-touch-startup-image"
-      media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait) and (prefers-color-scheme: dark)"
-      href="/pwa/splashes/splash-1179x2556-portrait-dark.jpg">
+<link
+  rel="apple-touch-startup-image"
+  media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait) and (prefers-color-scheme: dark)"
+  href="/pwa/splashes/splash-1179x2556-portrait-dark.jpg"
+/>
 ```
 
 ---
@@ -375,16 +377,16 @@ The splash screen dimensions live in `generators/splashes.py` (`SPLASH_SCREENS` 
 When Apple releases new devices, add a new entry to `_IOS_RAW_DEVICES` — everything
 else updates automatically.
 
-`SPEC_VERSION = "2025.06"` in `source.py` tracks the last spec update and
+`SPEC_VERSION = "2026.05"` in `source.py` tracks the last spec update and
 automatically busts the asset cache when incremented.
 
-> **Package version**: `0.2.0`
+> **Package version**: `0.2.3`
 
 ---
 
 ## Testing
 
-The project uses `tox` for multi-version testing (Django 3.2 → 5.1, Python 3.8 → 3.12). 
+The project uses `tox` for multi-version testing (Django 3.2 → 5.1, Python 3.8 → 3.12).
 
 A helper script is provided to run tests inside a Docker container (using `divio/multi-python`), ensuring all system dependencies (like `libcairo2`) are present without polluting your local host.
 
@@ -402,6 +404,7 @@ A helper script is provided to run tests inside a Docker container (using `divio
 ```
 
 The script automatically:
+
 1. Builds a custom Docker image `django-pwa-assets-test`.
 2. Mounts the project root to `/src`.
 3. Executes `tox` with any provided arguments.

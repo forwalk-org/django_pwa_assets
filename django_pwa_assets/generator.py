@@ -30,20 +30,20 @@ Example::
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Union
+from typing import Dict, List
 from PIL.Image import Image
 from asgiref.sync import async_to_sync
 
 from .conf import setting
 from .generators import (
-    AssetManifestEntry,
     AssetTask,
+    AssetManifestEntry,
+    parse_color,
     get_or_generate_assets_async,
     generate_favicons,
     generate_icons,
     generate_mstiles,
     generate_splashes,
-    parse_color,
 )
 
 # ---------------------------------------------------------------------------
@@ -76,8 +76,7 @@ async def aget_or_generate_icons(img: Image, **kwargs) -> List[AssetManifestEntr
     """
     # Pull default purposes from settings if not in kwargs
     if "purposes" not in kwargs:
-        kwargs["purposes"] = setting("PURPOSES") or (
-            "any", "maskable", "monochrome")
+        kwargs["purposes"] = setting("PURPOSES") or ("any", "maskable", "monochrome")
 
     return await get_or_generate_assets_async(img, generate_icons, **kwargs)
 

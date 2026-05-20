@@ -1,6 +1,6 @@
 {% spaceless %}
   {% for entry in entries %}
-     <meta name="{{ entry.name }}" content="{{ entry.src }}">
+     <meta name="{{ entry.name }}" content="{{ entry.url }}">
   {% endfor %}
   {% if tile_color %}
      <meta name="msapplication-TileColor" content="{{ tile_color }}">

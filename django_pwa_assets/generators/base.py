@@ -37,6 +37,7 @@ logger = logging.getLogger(__name__)
 
 class AssetManifestEntry(TypedDict, total=False):
     """A single entry in the generated asset manifest."""
+
     src: str
     url: str
     type: str
@@ -45,8 +46,6 @@ class AssetManifestEntry(TypedDict, total=False):
     rel: Optional[str]
     media: Optional[str]
     name: Optional[str]
-    meta_tag: Optional[str]
-    html_tag: Optional[str]
     dark: Optional[bool]
     width: Optional[int]
     height: Optional[int]
@@ -62,6 +61,7 @@ class AssetTask:
         mimetype: MIME type of the generated asset.
         metadata: Additional attributes (rel, sizes, purpose, etc.) for the manifest.
     """
+
     filename: str
     content: bytes
     mimetype: str
@@ -160,32 +160,10 @@ def build_manifest_entry(
         "src": src,
         "url": url,
         "type": task.mimetype,
-        **task.metadata
+        **task.metadata,
     }
 
-    # Generate format-specific HTML boilerplate based on task metadata
-    name = task.metadata.get("name")
-    media = task.metadata.get("media")
-    rel = task.metadata.get("rel")
-    sizes = task.metadata.get("sizes", "any")
-
-    if name:
-        entry["meta_tag"] = f'<meta name="{name}" content="{url}">'
-
-    if media:
-        # Standard format for Apple startup images (splash screens)
-        entry["html_tag"] = f'<link rel="apple-touch-startup-image" href="{url}" media="{media}">'
-    elif rel:
-        # Standard format for linked icons and favicons
-        entry["html_tag"] = f'<link rel="{rel}" href="{url}" sizes="{sizes}">'
-
-    # Allow task-specific overrides for HTML/Meta tags
-    if "meta_tag" in task.metadata:
-        entry["meta_tag"] = task.metadata["meta_tag"]
-    if "html_tag" in task.metadata:
-        entry["html_tag"] = task.metadata["html_tag"]
-
-    print(f"DEBUG: build_manifest_entry for {task.filename}: {entry}")
+    logger.debug("build_manifest_entry for %s %s", task.filename, entry)
     return entry
 
 
@@ -205,6 +183,7 @@ async def upload_asset(
         The completed manifest entry dictionary.
     """
     async with semaphore:
+
         def _save():
             # Overwrite if file already exists in case of partial runs or force updates
             if storage.exists(task.filename):
@@ -213,15 +192,11 @@ async def upload_asset(
             return storage.url(saved_name), saved_name
 
         url, src = await sync_to_async(_save)()
-        return build_manifest_entry(
-            task, url, src
-        )
+        return build_manifest_entry(task, url, src)
 
 
 async def get_or_generate_assets_async(
-    img: Any,
-    generator_fn: Callable[..., Generator[AssetTask, None, None]],
-    **kwargs
+    img: Any, generator_fn: Callable[..., Generator[AssetTask, None, None]], **kwargs
 ) -> List[AssetManifestEntry]:
     """Primary entry point to orchestrate asset generation, caching, and storage.
 
@@ -243,9 +218,7 @@ async def get_or_generate_assets_async(
     generator_name = generator_fn.__name__
 
     # 1. Compute deterministic cache key
-    source_key = await sync_to_async(
-        compute_image_key
-    )(img, kwargs)
+    source_key = await sync_to_async(compute_image_key)(img, kwargs)
 
     if kwargs.get("asset_dir"):
         asset_dir = kwargs.pop("asset_dir")
@@ -257,13 +230,11 @@ async def get_or_generate_assets_async(
         if await sync_to_async(storage_assets_exist)(asset_dir, generator_name):
             cached = await sync_to_async(get_manifest)(asset_dir, generator_name)
             if cached:
-                logger.debug("PWA Cache: hit for %s:%s",
-                             asset_dir, generator_name)
+                logger.debug("PWA Cache: hit for %s:%s", asset_dir, generator_name)
                 return cached
 
     # 3. Generation Phase (CPU Intensive)
-    logger.debug("PWA generation: starting for %s:%s",
-                 asset_dir, generator_name)
+    logger.debug("PWA generation: starting for %s:%s", asset_dir, generator_name)
 
     # 3.1. Normalize source to PIL
     source_img = await sync_to_async(resolve_source_to_pil)(img)
@@ -278,17 +249,11 @@ async def get_or_generate_assets_async(
     max_concur = setting("MAX_CONCURRENT_UPLOADS")
     sem = asyncio.Semaphore(max_concur)
     storage = get_storage()
-    upload_futures = [
-        upload_asset(
-            storage, task, sem
-        )
-        for task in tasks
-    ]
+    upload_futures = [upload_asset(storage, task, sem) for task in tasks]
     entries = await asyncio.gather(*upload_futures)
 
     # 5. Persist Manifest
     await sync_to_async(set_manifest)(asset_dir, entries, generator_name)
-    logger.debug("PWA generation: complete for %s:%s",
-                 asset_dir, generator_name)
+    logger.debug("PWA generation: complete for %s:%s", asset_dir, generator_name)
 
     return entries
